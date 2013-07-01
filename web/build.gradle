@@ -21,7 +21,6 @@ dependencies {
     }
     runtime 'cglib:cglib:2.2.2'
 	runtime "org.codehaus.groovy:groovy-all:$groovyVersion"
-	runtime 'jline:jline:1.0'
 	runtime project(':groovy-shell')
 }
 

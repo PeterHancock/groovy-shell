@@ -11,10 +11,22 @@ compileJava.options.fork([memoryMaximumSize: '1024m'])
 repositories {
     mavenCentral()
 }
+/*configurations {
+	fatJar
+}*/
 
 dependencies {
     groovy "org.codehaus.groovy:groovy-all:$groovyVersion"
     compile "org.springframework:spring-core:$springVersion",
             "org.springframework:spring-context:$springVersion"
+    runtime 'jline:jline:1.0',
+			'org.fusesource.jansi:jansi:1.2.1'
+    //fatJar
+
 }
 
+/*
+// Create a jar that includes dependencies
+jar {
+	from configurations.fatJar.collect { it.isDirectory() ? it : zipTree(it) }
+}*/
