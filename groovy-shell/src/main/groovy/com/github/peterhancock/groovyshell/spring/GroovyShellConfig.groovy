@@ -10,14 +10,11 @@ import com.github.peterhancock.groovyshell.GroovyShellService
 @Configuration
 class GroovyShellConfig {
 
-	@Autowired
-	private ApplicationContext springContext
-	
-	@Bean
-	public GroovyShellService groovyShellService() {
-		println 'goovy shell on port 1111'
-		def groovyShellService = new GroovyShellService([context: springContext], 1111)
-		groovyShellService.launchInBackground()
-		return groovyShellService
-	}
+    @Autowired
+    private ApplicationContext springContext
+
+    @Bean(destroyMethod = "destroy")
+    public GroovyShellService groovyShellService() {
+        return new GroovyShellService([context: springContext], 1111)
+    }
 }

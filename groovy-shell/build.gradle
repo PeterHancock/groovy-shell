@@ -12,21 +12,21 @@ repositories {
     mavenCentral()
 }
 /*configurations {
-	fatJar
-}*/
+ fatJar
+ }*/
 
 dependencies {
     groovy "org.codehaus.groovy:groovy-all:$groovyVersion"
     compile "org.springframework:spring-core:$springVersion",
             "org.springframework:spring-context:$springVersion"
     runtime 'jline:jline:1.0',
-			'org.fusesource.jansi:jansi:1.2.1'
+            'org.fusesource.jansi:jansi:1.2.1'
     //fatJar
 
 }
 
 /*
-// Create a jar that includes dependencies
-jar {
-	from configurations.fatJar.collect { it.isDirectory() ? it : zipTree(it) }
-}*/
+ // Create a jar that includes dependencies
+ jar {
+ from configurations.fatJar.collect { it.isDirectory() ? it : zipTree(it) }
+ }*/

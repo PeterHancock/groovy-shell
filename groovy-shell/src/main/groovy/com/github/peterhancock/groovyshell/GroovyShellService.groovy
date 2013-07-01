@@ -7,30 +7,32 @@ import java.net.Socket
 public class GroovyShellService extends GroovyService {
 
     private ServerSocket serverSocket
-    private int socket
+    private int port
     private Thread serverThread
     private threads = []
+    private alive = true
 
     public GroovyShellService() {
     }
 
-    public GroovyShellService(int socket) {
-        this.socket = socket
+    public GroovyShellService(int port) {
+        this([:], port)
     }
 
-    public GroovyShellService(Map bindings, int socket) {
-        super(bindings);
-        this.socket = socket;
+    public GroovyShellService(Map bindings, int port) {
+        super(bindings)
+        println "goovy shell on port $port"
+        this.port = port
     }
-    
+
     public void launch() {
         println "GroovyShellService launch()"
 
         try {
-            serverSocket = new ServerSocket(socket);
+            serverSocket = new ServerSocket(port);
             println("GroovyShellService launch() serverSocket: " + serverSocket)
 
-            while (true) {
+            while (alive) {
                 Socket clientSocket = null;
                 try {
                     clientSocket = serverSocket.accept();
@@ -64,6 +66,7 @@ public class GroovyShellService extends GroovyService {
     public void destroy() {
         println("closing serverSocket: " + serverSocket);
         try {
+            alive = false;
             serverSocket.close();
             threads.each { nextThread ->
                 println("closing nextThread: " + nextThread);

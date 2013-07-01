@@ -1,5 +1,5 @@
 
-package com.github.peterhancock.groovyshell 
+package com.github.peterhancock.groovyshell
 import groovy.lang.Binding;
 
 import org.codehaus.groovy.tools.shell.Groovysh
@@ -16,7 +16,6 @@ public class GroovyShellThread extends Thread {
     private Binding binding;
 
     public GroovyShellThread(Socket socket, Binding binding) {
-        super();
         this.socket = socket;
         this.binding = binding;
     }
