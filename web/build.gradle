@@ -25,3 +25,7 @@ dependencies {
 	runtime project(':groovy-shell')
 }
 
+jettyRun.doFirst {
+	System.setProperty("component.scan", "com.github.peterhancock.groovyshell.spring")
+}
+

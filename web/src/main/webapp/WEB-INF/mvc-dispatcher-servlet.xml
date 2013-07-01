@@ -8,7 +8,7 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
  
     <context:component-scan base-package="com.github.peterhancock.groovyshell.web.controller" />
-    <context:component-scan base-package="com.github.peterhancock.groovyshell.spring" />
+    <context:component-scan base-package="${component.scan:''}" />
     <bean
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix">

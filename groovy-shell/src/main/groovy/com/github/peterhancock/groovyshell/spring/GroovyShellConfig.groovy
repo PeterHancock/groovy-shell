@@ -10,20 +10,14 @@ import com.github.peterhancock.groovyshell.GroovyShellService
 @Configuration
 class GroovyShellConfig {
 
-	private static GroovyShellService groovyShellService
-
 	@Autowired
 	private ApplicationContext springContext
 	
 	@Bean
 	public GroovyShellService groovyShellService() {
-		//TODO why is this method called twice?
-		if (groovyShellService == null) {
-			def bindings = [context: springContext]
-			println 'goovy shell on port 1111'
-			groovyShellService = new GroovyShellService(bindings, 1111)
-			groovyShellService.launchInBackground()
-		}
+		println 'goovy shell on port 1111'
+		def groovyShellService = new GroovyShellService([context: springContext], 1111)
+		groovyShellService.launchInBackground()
 		return groovyShellService
 	}
 }
