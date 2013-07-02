@@ -21,7 +21,7 @@ together with the system property
 
     component.scan=com.github.peterhancock.groovyshell.spring
 
-[Embedding a Groovy Console in a Java Server Application]: http://groovy.codehaus.org/Embedding+a+Groovy+Console+in+a+Java+Server+Application.
+[Embedding a Groovy Console in a Java Server Application]: http://groovy.codehaus.org/Embedding+a+Groovy+Console+in+a+Java+Server+Application
 
 [Bruce Fancher]:https://bitbucket.org/bkumar/spring-groovy-console
 
