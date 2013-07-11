@@ -17,18 +17,20 @@ public abstract class GroovyService  {
 
     public GroovyService(Map<String, Object> bindings) {
         this.bindings = bindings
-        serverThread = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            launch();
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
+    }
 
+    public void start() {
+        serverThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    launch();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
         serverThread.setDaemon(true);
         serverThread.start();
     }

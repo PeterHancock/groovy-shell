@@ -15,6 +15,8 @@ class GroovyShellConfig {
 
     @Bean(destroyMethod = "destroy")
     public GroovyShellService groovyShellService() {
-        return new GroovyShellService([context: springContext], 1111)
+        def bean = new GroovyShellService([context: springContext], 1112)
+        bean.start()
+        bean
     }
 }
