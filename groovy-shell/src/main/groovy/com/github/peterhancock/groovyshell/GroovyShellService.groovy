@@ -1,85 +1,109 @@
 package com.github.peterhancock.groovyshell
 
-import java.io.IOException
-import java.net.ServerSocket
-import java.net.Socket
+import org.codehaus.groovy.tools.shell.Groovysh
+import org.codehaus.groovy.tools.shell.IO
 
-public class GroovyShellService extends GroovyService {
+public final class GroovyShellService {
 
-    private ServerSocket serverSocket
-    private int port
-    private Thread serverThread
-    private threads = []
+    private final bindings
+    private final port
+    private serverThread
+    private serverSocket
+    private clientConnections = [:]
     private alive = true
 
-    public GroovyShellService() {
-    }
-
-    public GroovyShellService(int port) {
-        this([:], port)
-    }
-
     public GroovyShellService(Map bindings, int port) {
-        super(bindings)
+        this.bindings = bindings
         println "goovy shell on port $port"
         this.port = port
     }
 
-    public void launch() {
-        println "GroovyShellService launch()"
-
-        try {
-            serverSocket = new ServerSocket(port);
-            println("GroovyShellService launch() serverSocket: " + serverSocket)
-
-            while (alive) {
-                Socket clientSocket = null;
-                try {
-                    clientSocket = serverSocket.accept();
-                    println("GroovyShellService launch() clientSocket: " + clientSocket);
-                }
-                catch (IOException e) {
-                    println("e: " + e);
-                    return;
-                }
-
-                GroovyShellThread clientThread = new GroovyShellThread(clientSocket, createBinding());
-                threads.add(clientThread);
-                clientThread.start();
-            }
-        }
-        catch (IOException e) {
-            println("e: " + e);
-        }
-        finally {
+    public GroovyShellService start() {
+        serverThread = Thread.startDaemon {
             try {
-                serverSocket.close();
-                println("GroovyShellService launch() closed connection");
+                startServer()
             }
-            catch (IOException e) {
-                println("e: " + e);
+            catch (ex) {
+                logEx ex
             }
         }
+        this
     }
 
-    @Override
-    public void destroy() {
-        println("closing serverSocket: " + serverSocket);
+    private void startServer() {
         try {
-            alive = false;
-            serverSocket.close();
-            threads.each { nextThread ->
-                println("closing nextThread: " + nextThread);
-                nextThread.getSocket().close();
+            serverSocket = new ServerSocket(port)
+            println "GroovyShellService starting: $serverSocket"
+            while (alive) {
+                def clientSocket
+                try {
+                    clientSocket = serverSocket.accept()
+                    println "GroovyShellService launch() clientSocket: $clientSocket"
+                }
+                catch (ex) {
+                    logEx ex
+                    return
+                }
+
+                def t
+                t = Thread.start {
+                    try {
+                        final PrintStream out = new PrintStream(clientSocket.getOutputStream())
+                        final InputStream input = clientSocket.getInputStream()
+                        final binding = createBinding()
+                        binding.setVariable('out', out)
+                        final Groovysh groovy = new Groovysh(binding, new IO(input, out, out))
+                        try {
+                            groovy.run()
+                        }  catch (ex) {
+                             logEx ex
+                        }
+                        println "closing conneciton $t.id"
+                        clientConnections.remove(t.id)
+                        out.close()
+                        input.close()
+                        clientSocket.close()
+                    }
+                    catch (ex) {
+                        logEx ex
+                    }
+                }
+                clientConnections[t.id] = clientSocket
 
             }
-        }
-        catch (IOException e) {
-            println("e: " + e);
+        } catch (IOException ex) {
+            logEx ex
+        } finally {
+            destroy()
         }
     }
 
-    public void setSocket(final int socket) {
-        this.socket = socket;
+    private Binding createBinding() {
+        this.bindings.inject(new Binding()) { binding, entry ->
+            binding.setVariable(entry.key, entry.value)
+            binding
+        }
     }
+
+    public void destroy() {
+        alive = false
+        try {
+            clientConnections.each { id, socket ->
+                println "closing connection $id"
+                socket.close()
+            }
+        }
+        catch (IOException ex) {
+           logEx(ex)
+        } finally {
+            println "closing serverSocket: $serverSocket"
+            serverSocket.close()
+        }
+    }
+
+    private logEx(ex) {
+        println "Exception: $ex"
+        ex.printStackTrace()
+    }
+
 }
